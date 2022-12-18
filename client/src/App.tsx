@@ -1,12 +1,16 @@
 import React from 'react';
+import { Routes, Route } from 'react-router-dom';
+
 import './App.css';
-import { CreateRoomButton } from './components/CreateRoomButton';
+import { HomePage } from './pages/HomePage';
+import { RoomPage } from './pages/RoomPage';
 
 function App() {
   return (
-    <div className="App flex items-center justify-center w-screen h-screen">
-      <CreateRoomButton />
-    </div>
+    <Routes>
+      <Route path="" element={<HomePage />} />
+      <Route path="/room/:id" element={<RoomPage />} />
+    </Routes>
   );
 }
 

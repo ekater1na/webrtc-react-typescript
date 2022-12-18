@@ -1,5 +1,6 @@
 import React, { createContext, useEffect } from 'react';
 import socketIOClient from 'socket.io-client';
+import { useNavigate } from 'react-router-dom';
 
 const WS = 'http://localhost:8080';
 
@@ -14,7 +15,7 @@ interface RoomValue {
   // screenSharingId: string;
 }
 
-export const RoomContext = createContext<RoomValue | MediaStream | null>(null);
+export const RoomContext = createContext<RoomValue | null>(null);
 
 const ws = socketIOClient(WS);
 
@@ -23,8 +24,11 @@ interface Props {
 }
 
 export const RoomProvider: React.FunctionComponent<Props> = ({ children }) => {
+  const navigate = useNavigate();
+
   const enterRoom = ({ roomID }: { roomID: string }) => {
     console.log({ roomID });
+    navigate(`/room/${roomID}`);
   };
 
   useEffect(() => {
