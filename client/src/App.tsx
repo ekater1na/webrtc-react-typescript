@@ -1,5 +1,4 @@
 import React, { useEffect } from 'react';
-import logo from './logo.svg';
 import './App.css';
 import socketIO from 'socket.io-client';
 
@@ -11,21 +10,10 @@ function App() {
   }, []);
 
   return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.tsx</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
+    <div className="App flex items-center justify-center w-screen h-screen">
+      <button className="bg-rose-600 py-2 px-8 rounded-lg text-xl hover:bg-rose-800 text-white">
+        Start new meeting
+      </button>
     </div>
   );
 }
