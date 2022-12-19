@@ -3,6 +3,7 @@ import socketIOClient from 'socket.io-client';
 import { useNavigate } from 'react-router-dom';
 import Peer from 'peerjs';
 import { v4 as uuidV4 } from 'uuid';
+import internal from 'stream';
 
 const WS = 'http://localhost:8080';
 
@@ -56,6 +57,19 @@ export const RoomProvider: React.FunctionComponent<Props> = ({ children }) => {
     ws.on('room-created', enterRoom);
     ws.on('get-users', getUsers);
   }, []);
+
+  useEffect(() => {
+    if (!me) return;
+    if (!stream) return;
+
+    ws.on('user-joined', (peerID) => {
+      const call = me.call(peerID, stream);
+    });
+
+    me.on('call', (call) => {
+      call.answer(stream);
+    });
+  }, [me, stream]);
 
   // @ts-ignore
   return <RoomContext.Provider value={{ ws, me, stream }}>{children}</RoomContext.Provider>;
