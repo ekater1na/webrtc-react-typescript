@@ -9,7 +9,7 @@ const WS = 'http://localhost:8080';
 interface RoomValue {
   ws: unknown;
   me: unknown;
-  // stream?: MediaStream;
+  stream: MediaStream;
   // screenStream?: MediaStream;
   // peers: PeerState;
   // shareScreen: () => void;
@@ -29,6 +29,7 @@ interface Props {
 export const RoomProvider: React.FunctionComponent<Props> = ({ children }) => {
   const navigate = useNavigate();
   const [me, setMe] = useState<Peer>();
+  const [stream, setStream] = useState<MediaStream>();
 
   const enterRoom = ({ roomID }: { roomID: string }) => {
     console.log({ roomID });
@@ -44,9 +45,18 @@ export const RoomProvider: React.FunctionComponent<Props> = ({ children }) => {
     const peer = new Peer(meId);
     setMe(peer);
 
+    try {
+      navigator.mediaDevices.getUserMedia({ video: true, audio: true }).then((stream) => {
+        setStream(stream);
+      });
+    } catch (error) {
+      console.error(error);
+    }
+
     ws.on('room-created', enterRoom);
     ws.on('get-users', getUsers);
   }, []);
 
-  return <RoomContext.Provider value={{ ws, me }}>{children}</RoomContext.Provider>;
+  // @ts-ignore
+  return <RoomContext.Provider value={{ ws, me, stream }}>{children}</RoomContext.Provider>;
 };
