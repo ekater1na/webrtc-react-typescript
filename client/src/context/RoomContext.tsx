@@ -3,6 +3,7 @@ import socketIOClient from 'socket.io-client';
 import { useNavigate } from 'react-router-dom';
 import Peer from 'peerjs';
 import { v4 as uuidV4 } from 'uuid';
+
 import { peersReducer, PeerState } from './peerReducer';
 import { addPeerAction, removePeerAction } from './peerActions';
 
@@ -12,12 +13,7 @@ interface RoomValue {
   ws: unknown;
   me: unknown;
   stream: MediaStream;
-  // screenStream?: MediaStream;
   peers: PeerState;
-  // shareScreen: () => void;
-  // roomId: string;
-  // setRoomId: (id: string) => void;
-  // screenSharingId: string;
 }
 
 export const RoomContext = createContext<RoomValue | null>(null);
@@ -40,7 +36,14 @@ export const RoomProvider: React.FunctionComponent<Props> = ({ children }) => {
   };
 
   const getUsers = ({ participants }: { participants: string[] }) => {
-    console.log({ participants });
+    participants.map((peerId) => {
+      const call = stream && me?.call(peerId, stream);
+      console.log('call', call);
+      call?.on('stream', (userVideoStream: MediaStream) => {
+        console.log({ addPeerAction });
+        dispatch(addPeerAction(peerId, userVideoStream));
+      });
+    });
   };
 
   const removePeer = (peerID: string) => {
@@ -69,20 +72,20 @@ export const RoomProvider: React.FunctionComponent<Props> = ({ children }) => {
     if (!me) return;
     if (!stream) return;
 
-    ws.on('user-joined', (peerID) => {
-      const call = me.call(peerID, stream);
-      call.on('stream', (peerStream) => {
-        dispatch(addPeerAction(peerID, peerStream));
+    ws.on('user-joined', ({ peerID }: { roomID: string; peerID: string }) => {
+      const call = stream && me.call(peerID, stream);
+      call.on('stream', (userVideoStream: MediaStream) => {
+        dispatch(addPeerAction(peerID, userVideoStream));
       });
     });
 
     me.on('call', (call) => {
       call.answer(stream);
-      call.on('stream', (peerStream) => {
-        dispatch(addPeerAction(call.peer, peerStream));
+      call.on('stream', (userVideoStream) => {
+        dispatch(addPeerAction(call.peer, userVideoStream));
       });
     });
-  }, [me, stream]);
+  }, [stream, me]);
 
   console.log({ peers });
 

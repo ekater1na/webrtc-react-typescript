@@ -35,9 +35,9 @@ export const roomHandler = (socket: Socket) => {
     });
   };
 
-  const leaveRoom = ({ roomID, peerID }: IRoomParams) => {
-    socket.to(roomID).emit("user-disconnected", peerID );
-    rooms[roomID] = rooms[roomID].filter(id => id !== peerID);
+  const leaveRoom = ({ peerID, roomID }: IRoomParams) => {
+    rooms[roomID] = rooms[roomID]?.filter((id) => id !== peerID);
+    socket.to(roomID).emit("user-disconnected", peerID);
   };
 
   socket.on("create-room", createRoom);

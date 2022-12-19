@@ -4,15 +4,11 @@ import { RoomContext } from '../context/RoomContext';
 export const CreateRoomButton: React.FC = () => {
   // eslint-disable-next-line @typescript-eslint/ban-ts-comment
   // @ts-ignore
-  const { ws } = useContext(RoomContext);
+  const { ws, me } = useContext(RoomContext);
 
   const createRoom = () => {
-    ws.emit('create-room');
+    ws.emit('create-room', { peerID: me._id });
   };
-
-  // const joinRoom = () => {
-  //   ws.emit('join-room');
-  // };
 
   return (
     <button

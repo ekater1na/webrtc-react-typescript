@@ -7,5 +7,5 @@ export const VideoPlayer: React.FC<{ stream: MediaStream }> = ({ stream }) => {
     if (videoRef.current) videoRef.current.srcObject = stream;
   }, [stream]);
 
-  return <video ref={videoRef} autoPlay muted />;
+  return <video playsInline ref={videoRef} autoPlay muted />;
 };
