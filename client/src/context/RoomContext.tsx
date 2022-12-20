@@ -52,7 +52,11 @@ export const RoomProvider: React.FunctionComponent<Props> = ({ children }) => {
 
   useEffect(() => {
     const meId = uuidV4();
-    const peer = new Peer(meId);
+    const peer = new Peer(meId, {
+      host: 'localhost',
+      port: 9000,
+      path: '/myapp',
+    });
     setMe(peer);
 
     try {
@@ -60,7 +64,7 @@ export const RoomProvider: React.FunctionComponent<Props> = ({ children }) => {
         setStream(stream);
       });
     } catch (error) {
-      console.error(error);
+      console.error({ error });
     }
 
     ws.on('room-created', enterRoom);

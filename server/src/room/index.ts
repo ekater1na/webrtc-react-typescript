@@ -9,12 +9,12 @@ interface IRoomParams {
 const rooms: Record<string, string[]> = {};
 
 export const roomHandler = (socket: Socket) => {
-  const createRoom = () => {
+  const createRoom = ({ peerID }: { peerID: string }) => {
     const roomID = uuidV4();
     rooms[roomID] = [];
     socket.emit("room-created", { roomID });
     console.log(`Room created, ${roomID}`);
-    // joinRoom({ roomID, peerID });
+    joinRoom({ roomID, peerID });
   };
 
   const joinRoom = ({ roomID, peerID }: IRoomParams) => {
@@ -27,6 +27,8 @@ export const roomHandler = (socket: Socket) => {
         roomID,
         participants: rooms[roomID],
       });
+    } else {
+      createRoom({ peerID });
     }
 
     socket.on("disconnect", () => {
@@ -35,9 +37,9 @@ export const roomHandler = (socket: Socket) => {
     });
   };
 
-  const leaveRoom = ({ peerID, roomID }: IRoomParams) => {
-    rooms[roomID] = rooms[roomID]?.filter((id) => id !== peerID);
+  const leaveRoom = ({ roomID, peerID }: IRoomParams) => {
     socket.to(roomID).emit("user-disconnected", peerID);
+    rooms[roomID] = rooms[roomID]?.filter((id) => id !== peerID);
   };
 
   socket.on("create-room", createRoom);
